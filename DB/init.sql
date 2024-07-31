@@ -1,0 +1,64 @@
+-- SQL 파일: create_hospital_tables.sql
+-- hospital 데이터베이스의 테이블을 재생성하는 SQL 스크립트
+
+-- 기존 데이터베이스 삭제
+DROP DATABASE IF EXISTS `hospital`;
+CREATE DATABASE `hospital`;
+USE `hospital`;
+
+-- 기존 테이블 삭제
+DROP TABLE IF EXISTS Disease;
+DROP TABLE IF EXISTS Medication;
+DROP TABLE IF EXISTS Test;
+DROP TABLE IF EXISTS Visit;
+DROP TABLE IF EXISTS Patient;
+
+-- Patient 테이블 생성
+CREATE TABLE Patient (
+    PT_NUM INT PRIMARY KEY,
+    PT_SX VARCHAR(10),
+    PT_BD DATE,
+    PT_EM VARCHAR(255),
+    PT_NM VARCHAR(255)
+);
+
+-- Visit 테이블 생성
+CREATE TABLE Visit (
+    VS_ID VARCHAR(50) PRIMARY KEY,
+    PT_NUM INT,
+    VS_DPMT VARCHAR(255),
+    VS_TIME DATETIME,
+    VS_FEE DECIMAL(10, 2),
+    VS_STMT TEXT,
+    FOREIGN KEY (PT_NUM) REFERENCES Patient(PT_NUM)
+);
+
+-- Test 테이블 생성
+CREATE TABLE Test (
+    TEST_CD INT PRIMARY KEY,
+    VS_ID VARCHAR(50),
+    TEST_NM VARCHAR(255),
+    TEST_FEE DECIMAL(10, 2),
+    TEST_TYP VARCHAR(50),
+    FOREIGN KEY (VS_ID) REFERENCES Visit(VS_ID)
+);
+
+-- Medication 테이블 생성
+CREATE TABLE Medication (
+    MED_NUM INT PRIMARY KEY,
+    VS_ID VARCHAR(50),
+    MED_NM VARCHAR(255),
+    MED_PKCG VARCHAR(100),
+    MED_DSG VARCHAR(50),
+    MED_COM VARCHAR(255),
+    MED_INGR VARCHAR(255),
+    FOREIGN KEY (VS_ID) REFERENCES Visit(VS_ID)
+);
+
+-- Disease 테이블 생성
+CREATE TABLE Disease (
+    DS_CD INT PRIMARY KEY,
+    VS_ID VARCHAR(50),
+    DS_NM VARCHAR(255),
+    FOREIGN KEY (VS_ID) REFERENCES Visit(VS_ID)
+);
