@@ -1,31 +1,29 @@
 // reads /etc/passwd and print all users of current linux program
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdbool.h>
 
-int main() {
-    // Open /etc/passwd for reading
-    FILE *file = fopen("/etc/passwd", "r");
-    if (file == NULL) {
-        perror("Error opening /etc/passwd");
-        return EXIT_FAILURE;
-    }
+int main(void)
+{
+   FILE *file = fopen("/etc/passwd", "r");
+   if (file == NULL) {
+      perror("fopen");
+      goto err;
+   }
 
-    char line[256];  // Buffer to store each line from the file
+   char c;
+   bool nextline;
+   while (fread(&c, 1, 1, file) == 1)
+   {
+      if (c == ':')
+         nextline = true;
+      if (nextline && c == '\n')
+         nextline = false;
+      if (nextline == false)
+         putchar(c);
+   }
 
-    // Read the file line by line
-    while (fgets(line, sizeof(line), file)) {
-        // Split the line by colon ':' to get the username
-        char *username = strtok(line, ":");
-        
-        if (username != NULL) {
-            printf("%s\n", username);  // Print only the username
-        }
-    }
-
-    // Close the file
-    fclose(file);
-
-    return EXIT_SUCCESS;
+   return 0;
+err:
+   return -1;
 }
